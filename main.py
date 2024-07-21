@@ -51,10 +51,12 @@ class flicks:
         worksheet = sheet.worksheet('List of movies')
         movies = worksheet.col_values(1)[1:]
         for movie in movies:
+            #movie = 'Indian 2'
             self.movie_name = movie
             href = self.get_movies(movie_name=movie)
             if href == None:continue
             self.get_movies_location(href=href)
+
         
     def get_movies(self,movie_name:str):
         
@@ -130,8 +132,9 @@ class flicks:
                   'melbourne-city-inner','melbourne-east','melbourne-north-and-west','melbourne-south-and-frankston']
         
         for city in cities:
+            #city = 'melbourne-north-and-west'
             city_url = f'{href}{city}'
-            print(city_url)
+            #print(city_url)
             response = requests.get(city_url,headers=headers)
             #print(response.text)
             soup = BeautifulSoup(response.text,'html.parser')
@@ -146,27 +149,32 @@ class flicks:
                 response = requests.get(region_url,headers=headers,cookies=cookies)
                 soup = BeautifulSoup(response.text,'html.parser')
                 articles = soup.select('article')
+                
                 for article in articles:
-                    dic = {}
                     if 'sydney' in city:
-                        dic['City'] = 'Sydney'
+                        loc = 'Sydney'
                     if 'melbourne' in city:
-                        dic['City'] = 'Melbourne'
-                    dic['Movie name'] = self.movie_name
-                    dic['Date'] = date
-                    dic['Theatre'] = article.h4.text
+                        loc = 'Melbourne'
                     times = article.select('.times-calendar-times__el__time')
                     for time_ in times:
+                        dic = {}
+                        dic['City'] = loc
+                        dic['Movie name'] = self.movie_name
+                        dic['Date'] = date
+                        dic['Theatre'] = article.h4.text
+                        a_tag = time_.parent.get('href')
                         try:
                             dic['Times'] = time_.text.strip()
-                            dic['Ticket link'] = time_.parent.get('href')
+                            dic['Ticket link'] = a_tag
                             print(dic)
                             self.save.append(dic)
                         except:
                             pass
-    
+            
+
     def saving(self):
         df = pandas.DataFrame(self.save)
+        #df.to_excel('flicks.xlsx',index=0)
         df = df.drop_duplicates()
         df = df.replace(np.NAN,'')
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
