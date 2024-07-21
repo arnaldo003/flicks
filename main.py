@@ -156,20 +156,18 @@ class flicks:
                     dic['Date'] = date
                     dic['Theatre'] = article.h4.text
                     times = article.select('.times-calendar-times__el__time')
-                    time_dates = []
                     for time_ in times:
-                        time_dates.append(time_.text.strip())
-                    time_dates = ' | '.join(time_dates) 
-                    dic['Times'] = time_dates
-                    try:
-                        dic['Ticket link'] = article.select_one('[data-category="Bookings"]')['href']
-                    except:
-                        dic['Ticket link'] = ''
-                    print(dic)
-                    self.save.append(dic)
+                        try:
+                            dic['Times'] = time_.text.strip()
+                            dic['Ticket link'] = time_.parent.get('href')
+                            print(dic)
+                            self.save.append(dic)
+                        except:
+                            pass
     
     def saving(self):
         df = pandas.DataFrame(self.save)
+        df = df.drop_duplicates()
         df = df.replace(np.NAN,'')
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
         gc = gspread.service_account_from_dict(self.creds)
