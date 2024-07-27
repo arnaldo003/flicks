@@ -213,14 +213,14 @@ class flicks:
                 spreed_sheet_id = '1fMD-Ld9LOn8LctXuaFYywv3mY_LugjS1syd-bCizer0'
                 sheet = gc.open_by_key(spreed_sheet_id)
                 worksheet = sheet.worksheet('Session times')
-                worksheet.batch_clear(["A1:EZ"])
+                worksheet.batch_clear(["A2:EZ"])
                 columns = df.columns.values.tolist()
                 body = df.values.tolist()
                 save = []
                 save.append(columns)
                 for item in body:
                     save.append(item)
-                worksheet.update(values=save,range_name='A1',)
+                worksheet.update(values=save,range_name='A2',)
                 print('exit - 0 finish | date: ',datetime.datetime.now() , ' | total: ' + str(len(self.save)))
                 break
             except gspread.exceptions.APIError:
