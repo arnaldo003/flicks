@@ -6,6 +6,7 @@ import numpy as np
 import datetime
 import json
 import urllib.parse
+import time
 
 # Set up time of running script 600 = 10 mins
 seconds = 3000 
@@ -50,9 +51,11 @@ class flicks:
         sheet = gc.open_by_key(spreed_sheet_id)
         worksheet = sheet.worksheet('List of movies')
         movies = worksheet.col_values(1)[1:]
-        for movie in movies:
+        movie_ids = worksheet.col_values(2)[1:]
+        for movie,movie_id in zip(movies,movie_ids):
             #movie = 'Indian 2'
             self.movie_name = movie
+            self.movie_id = movie_id
             href = self.get_movies(movie_name=movie)
             if href == None:continue
             self.get_movies_location(href=href)
@@ -140,7 +143,9 @@ class flicks:
             soup = BeautifulSoup(response.text,'html.parser')
             divs = soup.find_all('div',attrs={'data-date':True})
             if divs == []:
-                print('No found! on city : ',city)
+                print(f' ! Movie : {self.movie_name} Not Found! on city : ',city.title().replace('-',' '))
+                continue
+            
             for div in divs:
                 date = div['data-date']
                 region = div['data-geotype']
@@ -160,13 +165,32 @@ class flicks:
                         dic = {}
                         dic['City'] = loc
                         dic['Movie name'] = self.movie_name
+                        dic['Movie ID'] = self.movie_id
                         dic['Date'] = date
-                        dic['Theatre'] = article.h4.text
-                        a_tag = time_.parent.get('href')
+                        theatre = article.h4.text
+                        if 'Event' in theatre:
+                            theatre = 'Event cinemas'
+                        if 'Reading' in theatre:
+                            theatre = 'Reading cinemas'
+                        if 'Village' in theatre:
+                            theatre = 'Village cinemas'
+                        if 'United' in theatre:
+                            theatre = 'United cinemas'
+                        if 'Hoyts' in theatre:
+                            theatre = 'Hoyts Highpoint'
+                        if 'Highpoint' in theatre or 'IMAX' in theatre:
+                            theatre = 'Hoyts Highpoint'
+                            
+                        dic['Theatre'] = theatre
                         try:
+                            a_tag = time_.parent.get('href')
                             dic['Times'] = time_.text.strip()
+                            if '&bookingSource' in a_tag:
+                                a_tag = a_tag.split('&bookingSource')[0].strip()
                             dic['Ticket link'] = a_tag
-                            print(dic)
+                            name = dic['Movie name']
+                            url_link = dic['Ticket link']
+                            print(f'Name: {name} | Link: {url_link}')
                             self.save.append(dic)
                         except:
                             pass
@@ -194,6 +218,8 @@ class flicks:
         print('exit - 0 finish | date: ',datetime.datetime.now() , ' | total: ' + str(len(self.save)))
 
 if __name__ == '__main__':
+    start_time = time.time() 
     flicks_obj = flicks()
     flicks_obj.read_sheets()
     flicks_obj.saving()
+    print("multiple threads took ", (time.time() - start_time), " seconds")
