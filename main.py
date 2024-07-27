@@ -46,21 +46,26 @@ class flicks:
     set_list = []
     
     def read_sheets(self):
-        gc = gspread.service_account_from_dict(self.creds)
-        spreed_sheet_id = '1fMD-Ld9LOn8LctXuaFYywv3mY_LugjS1syd-bCizer0'
-        sheet = gc.open_by_key(spreed_sheet_id)
-        worksheet = sheet.worksheet('List of movies')
-        movies = worksheet.col_values(1)[1:]
-        movie_ids = worksheet.col_values(2)[1:]
-        for movie,movie_id in zip(movies,movie_ids):
-            #movie = 'Indian 2'
-            self.movie_name = movie
-            self.movie_id = movie_id
-            href = self.get_movies(movie_name=movie)
-            if href == None:continue
-            self.get_movies_location(href=href)
-
-        
+        while True:
+            try:
+                gc = gspread.service_account_from_dict(self.creds)
+                spreed_sheet_id = '1fMD-Ld9LOn8LctXuaFYywv3mY_LugjS1syd-bCizer0'
+                sheet = gc.open_by_key(spreed_sheet_id)
+                worksheet = sheet.worksheet('List of movies')
+                movies = worksheet.col_values(1)[1:]
+                movie_ids = worksheet.col_values(2)[1:]
+                for movie,movie_id in zip(movies,movie_ids):
+                    #movie = 'Indian 2'
+                    self.movie_name = movie
+                    self.movie_id = movie_id
+                    href = self.get_movies(movie_name=movie)
+                    if href == None:continue
+                    self.get_movies_location(href=href)
+                
+                break
+            except gspread.exceptions.APIError:
+                continue    
+            
     def get_movies(self,movie_name:str):
         
         headers = {
@@ -201,21 +206,25 @@ class flicks:
         #df.to_excel('flicks.xlsx',index=0)
         df = df.drop_duplicates()
         df = df.replace(np.NAN,'')
-        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        gc = gspread.service_account_from_dict(self.creds)
-     
-        spreed_sheet_id = '1fMD-Ld9LOn8LctXuaFYywv3mY_LugjS1syd-bCizer0'
-        sheet = gc.open_by_key(spreed_sheet_id)
-        worksheet = sheet.worksheet('Session times')
-        worksheet.batch_clear(["A1:EZ"])
-        columns = df.columns.values.tolist()
-        body = df.values.tolist()
-        save = []
-        save.append(columns)
-        for item in body:
-            save.append(item)
-        worksheet.update(values=save,range_name='A1',)
-        print('exit - 0 finish | date: ',datetime.datetime.now() , ' | total: ' + str(len(self.save)))
+        while True:
+            try:
+                SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+                gc = gspread.service_account_from_dict(self.creds)
+                spreed_sheet_id = '1fMD-Ld9LOn8LctXuaFYywv3mY_LugjS1syd-bCizer0'
+                sheet = gc.open_by_key(spreed_sheet_id)
+                worksheet = sheet.worksheet('Session times')
+                worksheet.batch_clear(["A1:EZ"])
+                columns = df.columns.values.tolist()
+                body = df.values.tolist()
+                save = []
+                save.append(columns)
+                for item in body:
+                    save.append(item)
+                worksheet.update(values=save,range_name='A1',)
+                print('exit - 0 finish | date: ',datetime.datetime.now() , ' | total: ' + str(len(self.save)))
+                break
+            except gspread.exceptions.APIError:
+                continue
 
 if __name__ == '__main__':
     start_time = time.time() 
