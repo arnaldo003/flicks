@@ -174,17 +174,20 @@ class flicks:
                         dic['Date'] = date
                         theatre = article.h4.text
                         if 'Event' in theatre:
-                            theatre = 'Event cinemas'
+                            theatre = theatre.replace("Event", "Event cinemas")
                         if 'Reading' in theatre:
-                            theatre = 'Reading cinemas'
+                            theatre = theatre.replace("Reading", "Reading cinemas")
                         if 'Village' in theatre:
-                            theatre = 'Village cinemas'
+                            theatre = theatre.replace("Village", "Village cinemas")
                         if 'United' in theatre:
-                            theatre = 'United cinemas'
+                            theatre = theatre.replace("United", "United cinemas")
                         if 'Hoyts' in theatre:
-                            theatre = 'Hoyts Highpoint'
-                        if 'Highpoint' in theatre or 'IMAX' in theatre:
-                            theatre = 'Hoyts Highpoint'
+                            theatre = theatre.replace("Hoyts", "Hoyts Highpoint")
+                        if 'Highpoint' in theatre:
+                            theatre = theatre.replace("Highpoint", "Hoyts Highpoint")
+                        if 'IMAX' in theatre:
+                            theatre = theatre.replace("IMAX", "Hoyts Highpoint")
+                            
                             
                         dic['Theatre'] = theatre
                         try:
