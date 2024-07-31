@@ -181,12 +181,14 @@ class flicks:
                             theatre = theatre.replace("Village", "Village cinemas")
                         if 'United' in theatre:
                             theatre = theatre.replace("United", "United cinemas")
-                        if 'Hoyts' in theatre:
-                            theatre = theatre.replace("Hoyts", "Hoyts Highpoint")
-                        if 'Highpoint' in theatre:
-                            theatre = theatre.replace("Highpoint", "Hoyts Highpoint")
-                        if 'IMAX' in theatre:
-                            theatre = theatre.replace("IMAX", "Hoyts Highpoint")
+                        # if 'Hoyts' in theatre:
+                        #     theatre = theatre.replace("Hoyts", "Hoyts Highpoint")
+                        # if 'Highpoint' in theatre:
+                        #     theatre = theatre.replace("Highpoint", "Hoyts Highpoint")
+                        # if 'IMAX' in theatre:
+                        #     theatre = theatre.replace("IMAX", "Hoyts Highpoint")
+                        if 'Hoyts Highpoint (and IMAX)' in theatre:
+                            theatre = theatre.replace("Hoyts Highpoint (and IMAX)", "Hoyts Highpoint")
                             
                             
                         dic['Theatre'] = theatre
